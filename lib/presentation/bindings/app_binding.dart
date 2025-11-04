@@ -1,0 +1,1 @@
+// App level GetX binding

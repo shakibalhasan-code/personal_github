@@ -1,0 +1,1 @@
+// Base usecase abstract class

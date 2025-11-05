@@ -16,8 +16,8 @@ class SearchBar extends StatelessWidget {
         decoration: InputDecoration(
           hintText: 'Enter GitHub username',
           prefixIcon: Icon(Icons.search),
-          suffixIcon: Obx(
-            () => controller.searchController.text.isNotEmpty
+          suffixIcon: GetBuilder<HomeController>(
+            builder: (_) => controller.searchController.text.isNotEmpty
                 ? IconButton(
                     icon: Icon(Icons.clear),
                     onPressed: () {

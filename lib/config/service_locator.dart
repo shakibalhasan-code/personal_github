@@ -7,9 +7,7 @@ import 'package:personal_github/presentation/controllers/theme_controller.dart';
 final getIt = GetIt.instance;
 
 /// Service Locator - Dependency Injection setup
-///
-/// Initializes all dependencies and registers them for application use.
-/// This should be called once during app startup.
+
 class ServiceLocator {
   static Future<void> setup() async {
     // Initialize SharedPreferences

@@ -49,6 +49,8 @@ class SearchResultsView extends StatelessWidget {
 
       return ListView.builder(
         padding: EdgeInsets.all(16),
+        shrinkWrap: true,
+        physics: NeverScrollableScrollPhysics(),
         itemCount: controller.searchResults.length,
         itemBuilder: (context, index) {
           final user = controller.searchResults[index];

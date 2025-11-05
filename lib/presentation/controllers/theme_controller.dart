@@ -13,18 +13,18 @@ class ThemeController extends GetxController {
     : _themePreferencesService = themePreferencesService;
 
   /// Initialize theme from saved preferences
-  /// This should be called during app initialization
   void initializeTheme() {
     _isDarkMode = _themePreferencesService.getThemeMode();
-    update(); // Notify GetBuilder listeners
+    // Notify GetBuilder listeners
+    update();
   }
 
-  /// Toggle between light and dark theme
   /// Saves the preference to SharedPreferences
   Future<void> toggleTheme() async {
     _isDarkMode = !_isDarkMode;
     await _themePreferencesService.setThemeMode(_isDarkMode);
     Get.changeThemeMode(_isDarkMode ? ThemeMode.dark : ThemeMode.light);
-    update(); // Notify GetBuilder listeners
+    // Notify GetBuilder listeners
+    update();
   }
 }

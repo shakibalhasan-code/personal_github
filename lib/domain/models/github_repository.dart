@@ -24,5 +24,15 @@ class GitHubRepository extends Equatable {
   });
 
   @override
-  List<Object?> get props => [name, description, url, language, stars, forks, createdAt, updatedAt, pushedAt];
+  List<Object?> get props => [
+    name,
+    description,
+    url,
+    language,
+    stars,
+    forks,
+    createdAt,
+    updatedAt,
+    pushedAt,
+  ];
 }

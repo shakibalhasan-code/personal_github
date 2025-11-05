@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:personal_github/domain/models/github_user.dart';
+import 'package:personal_github/domain/models/sort_filter_option.dart';
 import 'package:personal_github/presentation/controllers/home_controller.dart';
 
 class SearchResultsView extends StatelessWidget {
@@ -263,9 +264,8 @@ class SearchResultsView extends StatelessWidget {
                   children: [
                     Text(
                       'Repositories - ${controller.selectedUserUsername}',
-                      style: Theme.of(
-                        context,
-                      ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+                      style: Theme.of(context).textTheme.headlineSmall
+                          ?.copyWith(fontWeight: FontWeight.bold),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -312,6 +312,70 @@ class SearchResultsView extends StatelessWidget {
                 ),
             ],
           ),
+          SizedBox(height: 16),
+
+          // Sort and Filter Controls
+          if (controller.selectedUserRepositories.isNotEmpty)
+            Obx(() {
+              return SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    // Sort Dropdown
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 12),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey.shade400),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: DropdownButton<SortOption>(
+                        value: controller.currentSortOption,
+                        underline: SizedBox(),
+                        items: SortOption.values
+                            .map(
+                              (option) => DropdownMenuItem(
+                                value: option,
+                                child: Text(option.label),
+                              ),
+                            )
+                            .toList(),
+                        onChanged: (option) {
+                          if (option != null) {
+                            controller.setSortOption(option);
+                          }
+                        },
+                      ),
+                    ),
+                    SizedBox(width: 12),
+                    // Filter Dropdown
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 12),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey.shade400),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: DropdownButton<FilterOption>(
+                        value: controller.currentFilterOption,
+                        underline: SizedBox(),
+                        items: FilterOption.values
+                            .map(
+                              (option) => DropdownMenuItem(
+                                value: option,
+                                child: Text(option.label),
+                              ),
+                            )
+                            .toList(),
+                        onChanged: (option) {
+                          if (option != null) {
+                            controller.setFilterOption(option);
+                          }
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }),
           SizedBox(height: 16),
 
           // Loading
@@ -366,7 +430,9 @@ class SearchResultsView extends StatelessWidget {
                                 Expanded(
                                   child: Text(
                                     repo.description,
-                                    style: Theme.of(context).textTheme.labelSmall,
+                                    style: Theme.of(
+                                      context,
+                                    ).textTheme.labelSmall,
                                     maxLines: 2,
                                     overflow: TextOverflow.ellipsis,
                                   ),
@@ -389,7 +455,9 @@ class SearchResultsView extends StatelessWidget {
                                   ),
                                   child: Text(
                                     repo.language,
-                                    style: Theme.of(context).textTheme.labelSmall
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .labelSmall
                                         ?.copyWith(
                                           color:
                                               Theme.of(context).brightness ==
@@ -408,27 +476,33 @@ class SearchResultsView extends StatelessWidget {
                                 children: [
                                   Row(
                                     children: [
-                                      Icon(Icons.star,
-                                          size: 12, color: Colors.amber),
+                                      Icon(
+                                        Icons.star,
+                                        size: 12,
+                                        color: Colors.amber,
+                                      ),
                                       SizedBox(width: 2),
                                       Text(
                                         repo.stars.toString(),
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .labelSmall,
+                                        style: Theme.of(
+                                          context,
+                                        ).textTheme.labelSmall,
                                       ),
                                     ],
                                   ),
                                   Row(
                                     children: [
-                                      Icon(Icons.call_split,
-                                          size: 12, color: Colors.grey),
+                                      Icon(
+                                        Icons.call_split,
+                                        size: 12,
+                                        color: Colors.grey,
+                                      ),
                                       SizedBox(width: 2),
                                       Text(
                                         repo.forks.toString(),
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .labelSmall,
+                                        style: Theme.of(
+                                          context,
+                                        ).textTheme.labelSmall,
                                       ),
                                     ],
                                   ),
@@ -511,7 +585,9 @@ class SearchResultsView extends StatelessWidget {
                                             .labelSmall
                                             ?.copyWith(
                                               color:
-                                                  Theme.of(context).brightness ==
+                                                  Theme.of(
+                                                        context,
+                                                      ).brightness ==
                                                       Brightness.dark
                                                   ? Colors.white
                                                   : Colors.black,
@@ -522,28 +598,34 @@ class SearchResultsView extends StatelessWidget {
                                   SizedBox(width: 12),
                                   Row(
                                     children: [
-                                      Icon(Icons.star,
-                                          size: 14, color: Colors.amber),
+                                      Icon(
+                                        Icons.star,
+                                        size: 14,
+                                        color: Colors.amber,
+                                      ),
                                       SizedBox(width: 4),
                                       Text(
                                         repo.stars.toString(),
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .labelSmall,
+                                        style: Theme.of(
+                                          context,
+                                        ).textTheme.labelSmall,
                                       ),
                                     ],
                                   ),
                                   SizedBox(width: 16),
                                   Row(
                                     children: [
-                                      Icon(Icons.call_split,
-                                          size: 14, color: Colors.grey),
+                                      Icon(
+                                        Icons.call_split,
+                                        size: 14,
+                                        color: Colors.grey,
+                                      ),
                                       SizedBox(width: 4),
                                       Text(
                                         repo.forks.toString(),
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .labelSmall,
+                                        style: Theme.of(
+                                          context,
+                                        ).textTheme.labelSmall,
                                       ),
                                     ],
                                   ),
@@ -556,26 +638,37 @@ class SearchResultsView extends StatelessWidget {
                                   // Created date
                                   Expanded(
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Row(
                                           children: [
-                                            Icon(Icons.add_circle_outline, size: 12, color: Colors.grey),
+                                            Icon(
+                                              Icons.add_circle_outline,
+                                              size: 12,
+                                              color: Colors.grey,
+                                            ),
                                             SizedBox(width: 3),
                                             Text(
                                               'Created',
-                                              style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                                                color: Colors.grey,
-                                              ),
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .labelSmall
+                                                  ?.copyWith(
+                                                    color: Colors.grey,
+                                                  ),
                                             ),
                                           ],
                                         ),
                                         SizedBox(height: 1),
                                         Text(
                                           _formatDateCompact(repo.createdAt),
-                                          style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                                            fontWeight: FontWeight.w500,
-                                          ),
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .labelSmall
+                                              ?.copyWith(
+                                                fontWeight: FontWeight.w500,
+                                              ),
                                         ),
                                       ],
                                     ),
@@ -583,26 +676,37 @@ class SearchResultsView extends StatelessWidget {
                                   // Updated date
                                   Expanded(
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Row(
                                           children: [
-                                            Icon(Icons.update, size: 12, color: Colors.grey),
+                                            Icon(
+                                              Icons.update,
+                                              size: 12,
+                                              color: Colors.grey,
+                                            ),
                                             SizedBox(width: 3),
                                             Text(
                                               'Updated',
-                                              style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                                                color: Colors.grey,
-                                              ),
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .labelSmall
+                                                  ?.copyWith(
+                                                    color: Colors.grey,
+                                                  ),
                                             ),
                                           ],
                                         ),
                                         SizedBox(height: 1),
                                         Text(
                                           _formatDateCompact(repo.updatedAt),
-                                          style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                                            fontWeight: FontWeight.w500,
-                                          ),
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .labelSmall
+                                              ?.copyWith(
+                                                fontWeight: FontWeight.w500,
+                                              ),
                                         ),
                                       ],
                                     ),
@@ -611,26 +715,37 @@ class SearchResultsView extends StatelessWidget {
                                     // Pushed date
                                     Expanded(
                                       child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
                                           Row(
                                             children: [
-                                              Icon(Icons.publish, size: 12, color: Colors.grey),
+                                              Icon(
+                                                Icons.publish,
+                                                size: 12,
+                                                color: Colors.grey,
+                                              ),
                                               SizedBox(width: 3),
                                               Text(
                                                 'Pushed',
-                                                style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                                                  color: Colors.grey,
-                                                ),
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .labelSmall
+                                                    ?.copyWith(
+                                                      color: Colors.grey,
+                                                    ),
                                               ),
                                             ],
                                           ),
                                           SizedBox(height: 1),
                                           Text(
                                             _formatDateCompact(repo.pushedAt!),
-                                            style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                                              fontWeight: FontWeight.w500,
-                                            ),
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .labelSmall
+                                                ?.copyWith(
+                                                  fontWeight: FontWeight.w500,
+                                                ),
                                           ),
                                         ],
                                       ),

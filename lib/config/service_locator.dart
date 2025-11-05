@@ -7,6 +7,7 @@ import 'package:personal_github/data/datasources/github_remote_data_source.dart'
 import 'package:personal_github/domain/repositories/github_user_repository.dart';
 import 'package:personal_github/domain/usecases/search_github_user_usecase.dart';
 import 'package:personal_github/domain/usecases/get_github_user_details_usecase.dart';
+import 'package:personal_github/domain/usecases/get_github_user_repositories_usecase.dart';
 import 'package:personal_github/presentation/controllers/theme_controller.dart';
 
 final getIt = GetIt.instance;
@@ -61,6 +62,13 @@ class ServiceLocator {
     // Register Get GitHub User Details UseCase
     getIt.registerSingleton<GetGitHubUserDetailsUseCase>(
       GetGitHubUserDetailsUseCase(repository: getIt<GitHubUserRepository>()),
+    );
+
+    // Register Get GitHub User Repositories UseCase
+    getIt.registerSingleton<GetGitHubUserRepositoriesUseCase>(
+      GetGitHubUserRepositoriesUseCase(
+        repository: getIt<GitHubUserRepository>(),
+      ),
     );
   }
 }

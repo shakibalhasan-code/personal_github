@@ -66,20 +66,33 @@ class SearchResultsView extends StatelessWidget {
         );
       }
 
-      return ListView.builder(
-        padding: EdgeInsets.all(16),
-        shrinkWrap: true,
-        physics: NeverScrollableScrollPhysics(),
-        itemCount: controller.searchResults.length,
-        itemBuilder: (context, index) {
-          final user = controller.searchResults[index];
-          return _buildUserCard(context, user);
-        },
+      return SingleChildScrollView(
+        child: Column(
+          children: [
+            ListView.builder(
+              padding: EdgeInsets.all(16),
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              itemCount: controller.searchResults.length,
+              itemBuilder: (context, index) {
+                final user = controller.searchResults[index];
+                return _buildUserCard(context, user, controller);
+              },
+            ),
+            // Show repositories if a user is selected
+            if (controller.selectedUserUsername.isNotEmpty)
+              _buildRepositoriesSection(context, controller),
+          ],
+        ),
       );
     });
   }
 
-  Widget _buildUserCard(BuildContext context, GitHubUser user) {
+  Widget _buildUserCard(
+    BuildContext context,
+    GitHubUser user,
+    HomeController controller,
+  ) {
     return Card(
       child: Padding(
         padding: EdgeInsets.all(16),
@@ -203,8 +216,148 @@ class SearchResultsView extends StatelessWidget {
                     ),
                 ],
               ),
+            SizedBox(height: 16),
+
+            // View repositories button
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  controller.fetchUserRepositories(user.username);
+                },
+                icon: Icon(Icons.folder_open),
+                label: Text('View Repositories'),
+              ),
+            ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildRepositoriesSection(
+    BuildContext context,
+    HomeController controller,
+  ) {
+    return Container(
+      margin: EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header
+          Text(
+            'Repositories - ${controller.selectedUserUsername}',
+            style: Theme.of(
+              context,
+            ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+          ),
+          SizedBox(height: 8),
+          Text(
+            '${controller.selectedUserRepositories.length} repositories',
+            style: Theme.of(
+              context,
+            ).textTheme.bodyMedium?.copyWith(color: Colors.grey),
+          ),
+          SizedBox(height: 16),
+
+          // Loading
+          if (controller.isLoadingRepos)
+            Center(child: CircularProgressIndicator())
+          // Empty
+          else if (controller.selectedUserRepositories.isEmpty)
+            Text(
+              'No repositories found',
+              style: Theme.of(context).textTheme.bodyMedium,
+            )
+          // List
+          else
+            ListView.builder(
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              itemCount: controller.selectedUserRepositories.length,
+              itemBuilder: (context, index) {
+                final repo = controller.selectedUserRepositories[index];
+                return Card(
+                  margin: EdgeInsets.symmetric(vertical: 8),
+                  child: Padding(
+                    padding: EdgeInsets.all(12),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Repo name
+                        Text(
+                          repo.name,
+                          style: Theme.of(context).textTheme.titleMedium
+                              ?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.blue,
+                              ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        SizedBox(height: 6),
+                        // Description
+                        if (repo.description.isNotEmpty)
+                          Text(
+                            repo.description,
+                            style: Theme.of(context).textTheme.bodySmall,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        SizedBox(height: 10),
+                        // Stats
+                        Row(
+                          children: [
+                            if (repo.language != 'Unknown')
+                              Container(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 4,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.grey.shade200,
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: Text(
+                                  repo.language,
+                                  style: Theme.of(context).textTheme.labelSmall,
+                                ),
+                              ),
+                            SizedBox(width: 12),
+                            Row(
+                              children: [
+                                Icon(Icons.star, size: 14, color: Colors.amber),
+                                SizedBox(width: 4),
+                                Text(
+                                  repo.stars.toString(),
+                                  style: Theme.of(context).textTheme.labelSmall,
+                                ),
+                              ],
+                            ),
+                            SizedBox(width: 16),
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.call_split,
+                                  size: 14,
+                                  color: Colors.grey,
+                                ),
+                                SizedBox(width: 4),
+                                Text(
+                                  repo.forks.toString(),
+                                  style: Theme.of(context).textTheme.labelSmall,
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+        ],
       ),
     );
   }

@@ -1,5 +1,6 @@
 import 'package:personal_github/core/services/github_api_service.dart';
 import 'package:personal_github/data/models/github_user_model.dart';
+import 'package:personal_github/data/models/github_repository_model.dart';
 
 abstract class GitHubRemoteDataSource {
   /// Search for GitHub users by username
@@ -11,6 +12,13 @@ abstract class GitHubRemoteDataSource {
 
   /// Get user details by username
   Future<GitHubUserModel> getUserDetails(String username);
+
+  /// Get user repositories by username
+  Future<List<GitHubRepositoryModel>> getUserRepositories(
+    String username, {
+    int page = 1,
+    int perPage = 10,
+  });
 }
 
 class GitHubRemoteDataSourceImpl implements GitHubRemoteDataSource {
@@ -55,6 +63,27 @@ class GitHubRemoteDataSourceImpl implements GitHubRemoteDataSource {
       return GitHubUserModel.fromJson(response);
     } catch (e) {
       throw Exception('Failed to fetch user details: $e');
+    }
+  }
+
+  @override
+  Future<List<GitHubRepositoryModel>> getUserRepositories(
+    String username, {
+    int page = 1,
+    int perPage = 10,
+  }) async {
+    try {
+      final response = await _apiService.getUserRepositories(
+        username,
+        page: page,
+        perPage: perPage,
+      );
+
+      return response
+          .map((item) => GitHubRepositoryModel.fromJson(item))
+          .toList();
+    } catch (e) {
+      throw Exception('Failed to fetch repositories: $e');
     }
   }
 }

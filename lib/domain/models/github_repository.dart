@@ -7,6 +7,9 @@ class GitHubRepository extends Equatable {
   final String language;
   final int stars;
   final int forks;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  final DateTime? pushedAt;
 
   const GitHubRepository({
     required this.name,
@@ -15,8 +18,11 @@ class GitHubRepository extends Equatable {
     required this.language,
     required this.stars,
     required this.forks,
+    required this.createdAt,
+    required this.updatedAt,
+    this.pushedAt,
   });
 
   @override
-  List<Object?> get props => [name, description, url, language, stars, forks];
+  List<Object?> get props => [name, description, url, language, stars, forks, createdAt, updatedAt, pushedAt];
 }

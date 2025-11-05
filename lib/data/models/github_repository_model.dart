@@ -11,6 +11,12 @@ class GitHubRepositoryModel {
   final int stars;
   @JsonKey(name: 'forks_count')
   final int forks;
+  @JsonKey(name: 'created_at')
+  final String createdAt;
+  @JsonKey(name: 'updated_at')
+  final String updatedAt;
+  @JsonKey(name: 'pushed_at')
+  final String? pushedAt;
 
   GitHubRepositoryModel({
     required this.name,
@@ -19,6 +25,9 @@ class GitHubRepositoryModel {
     this.language,
     required this.stars,
     required this.forks,
+    required this.createdAt,
+    required this.updatedAt,
+    this.pushedAt,
   });
 
   /// Convert JSON to GitHubRepositoryModel
@@ -30,6 +39,9 @@ class GitHubRepositoryModel {
       language: json['language'] as String?,
       stars: (json['stargazers_count'] ?? 0) as int,
       forks: (json['forks_count'] ?? 0) as int,
+      createdAt: json['created_at'] as String? ?? '',
+      updatedAt: json['updated_at'] as String? ?? '',
+      pushedAt: json['pushed_at'] as String?,
     );
   }
 
@@ -42,6 +54,9 @@ class GitHubRepositoryModel {
       language: language ?? 'Unknown',
       stars: stars,
       forks: forks,
+      createdAt: DateTime.tryParse(createdAt) ?? DateTime.now(),
+      updatedAt: DateTime.tryParse(updatedAt) ?? DateTime.now(),
+      pushedAt: pushedAt != null ? DateTime.tryParse(pushedAt!) : null,
     );
   }
 }

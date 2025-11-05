@@ -25,10 +25,11 @@ class RepositoriesView extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'Repositories',
-                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
+                  Expanded(
+                    child: Text(
+                      'Repositories',
+                      style: Theme.of(context).textTheme.headlineSmall
+                          ?.copyWith(fontWeight: FontWeight.bold),
                     ),
                   ),
                   SizedBox(height: 8),
@@ -78,6 +79,28 @@ class RepositoryCard extends StatelessWidget {
   final dynamic repo;
 
   const RepositoryCard({Key? key, required this.repo}) : super(key: key);
+
+  String _formatDate(DateTime date) {
+    final now = DateTime.now();
+    final difference = now.difference(date);
+
+    if (difference.inDays == 0) {
+      return 'Today';
+    } else if (difference.inDays == 1) {
+      return 'Yesterday';
+    } else if (difference.inDays < 7) {
+      return '${difference.inDays} days ago';
+    } else if (difference.inDays < 30) {
+      final weeks = (difference.inDays / 7).floor();
+      return '$weeks ${weeks == 1 ? 'week' : 'weeks'} ago';
+    } else if (difference.inDays < 365) {
+      final months = (difference.inDays / 30).floor();
+      return '$months ${months == 1 ? 'month' : 'months'} ago';
+    } else {
+      final years = (difference.inDays / 365).floor();
+      return '$years ${years == 1 ? 'year' : 'years'} ago';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -157,9 +180,79 @@ class RepositoryCard extends StatelessWidget {
                 ),
               ],
             ),
+            SizedBox(height: 12),
+            // Timestamps row
+            Row(
+              children: [
+                // Created date
+                Expanded(
+                  child: _buildDateInfo(
+                    context,
+                    'Created',
+                    _formatDate(repo.createdAt),
+                    Icons.add_circle_outline,
+                  ),
+                ),
+                SizedBox(width: 12),
+                // Updated date
+                Expanded(
+                  child: _buildDateInfo(
+                    context,
+                    'Updated',
+                    _formatDate(repo.updatedAt),
+                    Icons.update,
+                  ),
+                ),
+                if (repo.pushedAt != null) ...[
+                  SizedBox(width: 12),
+                  Expanded(
+                    child: _buildDateInfo(
+                      context,
+                      'Pushed',
+                      _formatDate(repo.pushedAt!),
+                      Icons.publish,
+                    ),
+                  ),
+                ],
+              ],
+            ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildDateInfo(
+    BuildContext context,
+    String label,
+    String value,
+    IconData icon,
+  ) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(icon, size: 14, color: Colors.grey),
+            SizedBox(width: 4),
+            Text(
+              label,
+              style: Theme.of(
+                context,
+              ).textTheme.labelSmall?.copyWith(color: Colors.grey),
+            ),
+          ],
+        ),
+        SizedBox(height: 2),
+        Text(
+          value,
+          style: Theme.of(
+            context,
+          ).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w500),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+      ],
     );
   }
 }

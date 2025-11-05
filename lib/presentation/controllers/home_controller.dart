@@ -16,6 +16,7 @@ class HomeController extends GetxController {
   final _isLoadingRepos = false.obs;
   final _hasSearched = false.obs;
   final _errorMessage = ''.obs;
+  final _isGridView = false.obs; // View mode: false = List, true = Grid
 
   late final SearchGitHubUserUseCase _searchGitHubUserUseCase;
   late final GetGitHubUserDetailsUseCase _getGitHubUserDetailsUseCase;
@@ -29,6 +30,7 @@ class HomeController extends GetxController {
   bool get isLoadingRepos => _isLoadingRepos.value;
   bool get hasSearched => _hasSearched.value;
   String get errorMessage => _errorMessage.value;
+  bool get isGridView => _isGridView.value;
 
   @override
   void onInit() {
@@ -131,5 +133,11 @@ class HomeController extends GetxController {
     _selectedUserUsername.value = '';
     _hasSearched.value = false;
     _errorMessage.value = '';
+  }
+
+  /// Toggle between list and grid view for repositories
+  void toggleViewMode() {
+    _isGridView.toggle();
+    update();
   }
 }

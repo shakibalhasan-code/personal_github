@@ -31,6 +31,25 @@ class SearchResultsView extends StatelessWidget {
         return Center(child: CircularProgressIndicator());
       }
 
+      if (controller.errorMessage.isNotEmpty) {
+        return Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.error_outline, size: 64, color: Colors.red[400]),
+              SizedBox(height: 16),
+              Text(
+                controller.errorMessage,
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyLarge?.copyWith(color: Colors.red[400]),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+        );
+      }
+
       if (controller.searchResults.isEmpty) {
         return Center(
           child: Column(

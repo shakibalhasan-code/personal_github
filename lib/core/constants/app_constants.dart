@@ -1,8 +1,11 @@
 class AppConstants {
   // API Configuration
-  static const String baseUrl = 'https://api.example.com';
+  static const String baseUrl = 'https://api.github.com';
   static const Duration apiTimeout = Duration(seconds: 30);
   static const int maxRetries = 3;
+
+  // GitHub API Endpoints
+  static const String searchUsersEndpoint = '/search/users';
 
   // App Information
   static const String appName = 'Personal GitHub';

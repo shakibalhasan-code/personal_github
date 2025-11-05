@@ -1,16 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:personal_github/config/service_locator.dart';
 import 'package:personal_github/domain/models/github_user.dart';
+import 'package:personal_github/domain/usecases/search_github_user_usecase.dart';
+import 'package:personal_github/domain/usecases/get_github_user_details_usecase.dart';
 
 class HomeController extends GetxController {
   final searchController = TextEditingController();
   final _searchResults = <GitHubUser>[].obs;
   final _isLoading = false.obs;
   final _hasSearched = false.obs;
+  final _errorMessage = ''.obs;
+
+  late final SearchGitHubUserUseCase _searchGitHubUserUseCase;
+  late final GetGitHubUserDetailsUseCase _getGitHubUserDetailsUseCase;
 
   List<GitHubUser> get searchResults => _searchResults;
   bool get isLoading => _isLoading.value;
   bool get hasSearched => _hasSearched.value;
+  String get errorMessage => _errorMessage.value;
+
+  @override
+  void onInit() {
+    super.onInit();
+    _searchGitHubUserUseCase = getIt<SearchGitHubUserUseCase>();
+    _getGitHubUserDetailsUseCase = getIt<GetGitHubUserDetailsUseCase>();
+  }
 
   @override
   void onClose() {
@@ -18,41 +33,63 @@ class HomeController extends GetxController {
     super.onClose();
   }
 
-  void searchGitHubUser(String username) {
-    if (username.isEmpty) {
+  /// Search for GitHub users
+  Future<void> searchGitHubUser(String username) async {
+    if (username.trim().isEmpty) {
       _hasSearched.value = false;
       _searchResults.clear();
+      _errorMessage.value = '';
       return;
     }
 
     _isLoading.value = true;
     _hasSearched.value = true;
+    _errorMessage.value = '';
 
-    // Simulate API call delay
-    Future.delayed(Duration(milliseconds: 800), () {
-      // Mock data - replace with actual API call
-      final mockUser = GitHubUser(
-        username: username,
-        avatarUrl: 'https://api.github.com/users/$username/avatar.jpg',
-        name: 'GitHub User',
-        bio: 'Passionate developer',
-        followers: 150,
-        following: 50,
-        publicRepos: 25,
-        location: 'San Francisco, CA',
-        company: 'Tech Company',
-        blog: 'https://example.com',
+    try {
+      final results = await _searchGitHubUserUseCase(
+        query: username,
+        perPage: 10,
       );
 
+      // Fetch full details for each user to get complete information
+      final fullResults = <GitHubUser>[];
+      for (final user in results) {
+        try {
+          final fullUserDetails = await _getGitHubUserDetailsUseCase(
+            user.username,
+          );
+          fullResults.add(fullUserDetails);
+        } catch (e) {
+          // If detailed fetch fails, use the search result
+          fullResults.add(user);
+        }
+      }
+
+      _searchResults.assignAll(fullResults);
+
+      if (fullResults.isEmpty) {
+        _errorMessage.value = 'No users found for "$username"';
+      }
+    } catch (e) {
       _searchResults.clear();
-      _searchResults.add(mockUser);
+      _errorMessage.value = 'Error: ${e.toString()}';
+      Get.snackbar(
+        'Error',
+        _errorMessage.value,
+        snackPosition: SnackPosition.BOTTOM,
+        duration: Duration(seconds: 3),
+      );
+    } finally {
       _isLoading.value = false;
-    });
+    }
   }
 
+  /// Clear search results
   void clearSearch() {
     searchController.clear();
     _searchResults.clear();
     _hasSearched.value = false;
+    _errorMessage.value = '';
   }
 }
